@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model WifiScan {
+  id            String   @id @default(cuid())
+  ssid          String
+  bssid         String?
+  signal        Int      @default(0)
+  frequency     Int?
+  channel       Int?
+  security      String
+  encryption    String?
+  vendor        String?
+  ipAddress     String?
+  score         Int
+  riskLevel     String
+  vulnerabilities Json?
+  recommendations Json?
+  location      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  scanResults   ScanResult[]
+}
+
+model ScanResult {
+  id         String   @id @default(cuid())
+  wifiScanId String
+  checkName  String
+  status     String
+  severity   String
+  message    String
+  details    String?
+  createdAt  DateTime @default(now())
+  wifiScan   WifiScan @relation(fields: [wifiScanId], references: [id], onDelete: Cascade)
+}
+
+model AlertLog {
+  id        String   @id @default(cuid())
+  type      String
+  message   String
+  severity  String
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
